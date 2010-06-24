@@ -1,1 +1,1 @@
-This source codes are for programming labs.
+These source codes are for programming labs.
