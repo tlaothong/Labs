@@ -1,0 +1,11 @@
+
+*~
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+ClientBin/
+*.suo
+*.sln.cache
+*.csproj.user
+TestResults/
