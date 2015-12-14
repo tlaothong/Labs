@@ -1,8 +1,10 @@
 <ion-view view-title="Playlists">
   <ion-content>
     <ion-list>
-      <ion-item ng-repeat="playlist in playlists" href="#/app/playlists/{{playlist.id}}">
-        {{playlist.title}}
+      <ion-item ng-repeat="playlist in cx.playlists">
+        <h3>{{playlist.Name}}</h3>
+          <p>{{playlist.Email}}</p>
+          <button type="button" ng-click="cx.showP(playlist.id)" >Go</button>
       </ion-item>
     </ion-list>
   </ion-content>

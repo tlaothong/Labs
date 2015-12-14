@@ -4,7 +4,7 @@
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 // 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic', 'starter.controllers'])
+angular.module('starter', ['ionic', 'starter.controllers', 'demo'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -54,7 +54,10 @@ angular.module('starter', ['ionic', 'starter.controllers'])
       views: {
         'menuContent': {
           templateUrl: 'templates/playlists.html',
-          controller: 'PlaylistsCtrl'
+          controller: 'PlaylistsCtrl as cx',
+          resolve: {
+              "playlists": ['demo.DataService', svc => { return svc.getAll(); }]
+          }
         }
       }
     })
@@ -64,7 +67,10 @@ angular.module('starter', ['ionic', 'starter.controllers'])
     views: {
       'menuContent': {
         templateUrl: 'templates/playlist.html',
-        controller: 'PlaylistCtrl'
+        controller: 'PlaylistCtrl as cx',
+        resolve: {
+            "playlistId": ['$stateParams', p => { return p.playlistId; }]
+        }
       }
     }
   });

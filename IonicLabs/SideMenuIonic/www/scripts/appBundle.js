@@ -3,7 +3,7 @@
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 // 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic', 'starter.controllers'])
+angular.module('starter', ['ionic', 'starter.controllers', 'demo'])
     .run(function ($ionicPlatform) {
     $ionicPlatform.ready(function () {
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
@@ -47,7 +47,10 @@ angular.module('starter', ['ionic', 'starter.controllers'])
         views: {
             'menuContent': {
                 templateUrl: 'templates/playlists.html',
-                controller: 'PlaylistsCtrl'
+                controller: 'PlaylistsCtrl as cx',
+                resolve: {
+                    "playlists": ['demo.DataService', function (svc) { return svc.getAll(); }]
+                }
             }
         }
     })
@@ -56,7 +59,10 @@ angular.module('starter', ['ionic', 'starter.controllers'])
         views: {
             'menuContent': {
                 templateUrl: 'templates/playlist.html',
-                controller: 'PlaylistCtrl'
+                controller: 'PlaylistCtrl as cx',
+                resolve: {
+                    "playlistId": ['$stateParams', function (p) { return p.playlistId; }]
+                }
             }
         }
     });
@@ -96,17 +102,69 @@ angular.module('starter.controllers', [])
             $scope.closeLogin();
         }, 1000);
     };
-})
-    .controller('PlaylistsCtrl', function ($scope) {
-    $scope.playlists = [
-        { title: 'Reggae', id: 1 },
-        { title: 'Chill', id: 2 },
-        { title: 'Dubstep', id: 3 },
-        { title: 'Indie', id: 4 },
-        { title: 'Rap', id: 5 },
-        { title: 'Cowbell', id: 6 }
-    ];
-})
-    .controller('PlaylistCtrl', function ($scope, $stateParams) {
 });
+var demo;
+(function (demo) {
+    //.controller('PlaylistsCtrl', function ($scope) {
+    //    $scope.playlists = [
+    //        { title: 'Reggae', id: 1 },
+    //        { title: 'Chill', id: 2 },
+    //        { title: 'Dubstep', id: 3 },
+    //        { title: 'Indie', id: 4 },
+    //        { title: 'Rap', id: 5 },
+    //        { title: 'Cowbell', id: 6 }
+    //    ];
+    //});
+    //.controller('PlaylistCtrl', function ($scope, $stateParams) {
+    //    });
+    var PlaylistsCtrl = (function () {
+        function PlaylistsCtrl(playlists) {
+            this.playlists = playlists;
+        }
+        PlaylistsCtrl.$inject = ['playlists'];
+        return PlaylistsCtrl;
+    })();
+    var PlaylistCtrl = (function () {
+        function PlaylistCtrl(playlistId, svc, $state) {
+            this.playlistId = playlistId;
+            this.$state = $state;
+            //alert(playlistId);
+            //alert(svc.get(playlistId));
+            this.data = svc.get(playlistId);
+        }
+        PlaylistCtrl.prototype.showP = function (id) {
+            alert(id);
+            this.$state.go('app.single', { playlistId: id });
+        };
+        PlaylistCtrl.$inject = ['playlistId', 'demo.DataService', '$state'];
+        return PlaylistCtrl;
+    })();
+    angular.module('starter.controllers')
+        .controller('PlaylistCtrl', PlaylistCtrl)
+        .controller('PlaylistsCtrl', PlaylistsCtrl);
+})(demo || (demo = {}));
+var demo;
+(function (demo) {
+    'use strict';
+    var DataService = (function () {
+        function DataService($resource) {
+            this.$resource = $resource;
+            // TODO: initialize service
+            this.svc = $resource('http://moman.azurewebsites.net/mgw/api/' + 'demo1');
+        }
+        DataService.prototype.getAll = function () {
+            // TODO: Implement or remove a method
+            return this.svc.query().$promise;
+        };
+        DataService.prototype.get = function (id) {
+            return this.svc.get({ id: id });
+        };
+        DataService.$inject = ['$resource'];
+        return DataService;
+    })();
+    demo.DataService = DataService;
+    angular
+        .module('demo', ['ngResource'])
+        .service('demo.DataService', DataService);
+})(demo || (demo = {}));
 //# sourceMappingURL=appBundle.js.map
